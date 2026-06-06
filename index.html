@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="color-scheme" content="dark">
+  <title>SpicyLooper</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    :root { color-scheme: dark; }
+
+    body {
+      background-color: #080808;
+      color: #00FF00;
+      font-family: 'Courier New', Courier, monospace;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 10px;
+      overflow-x: hidden;
+    }
+
+    #header {
+      width: 100%;
+      max-width: 520px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 0 12px 0;
+      border-bottom: 1px solid #003300;
+      margin-bottom: 10px;
+    }
+
+    h1 {
+      font-size: 2.2rem;
+      letter-spacing: 4px;
+      color: #00FF00;
+      text-shadow: 0 0 10px #00FF00;
+    }
+
+    .hdr-btns { display: flex; gap: 8px; align-items: center; }
+
+    #panic-btn {
+      border-color: #FF4400;
+      color: #FF4400;
+      letter-spacing: 2px;
+    }
+    #panic-btn:active { background: #1a0000; }
+
+    button {
+      background: #010d01;
+      color: #00FF00;
+      border: 1px solid #00AA00;
+      padding: 8px 12px;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 0.8rem;
+      cursor: pointer;
+      border-radius: 3px;
+      letter-spacing: 1px;
+      touch-action: manipulation;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    button:active { background: #002800; }
+    button:disabled { opacity: 0.25; cursor: default; }
+
+    #project-name {
+      width: 100%;
+      max-width: 520px;
+      text-align: center;
+      font-size: 0.85rem;
+      color: #009900;
+      margin-bottom: 8px;
+      letter-spacing: 1px;
+    }
+
+    #cover-img {
+      max-width: 140px;
+      max-height: 140px;
+      margin-bottom: 10px;
+      border: 1px solid #003300;
+      display: none;
+      border-radius: 4px;
+    }
+
+    #sections {
+      width: 100%;
+      max-width: 520px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .section-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 8px;
+      border: 1px solid #002200;
+      border-radius: 5px;
+      cursor: pointer;
+      background: #030803;
+      touch-action: manipulation;
+      user-select: none;
+      -webkit-user-select: none;
+      min-height: 56px;
+    }
+
+    .section-row.disabled {
+      cursor: default;
+      opacity: 0.35;
+    }
+
+    .section-row.s-playing {
+      border-color: #00FF00;
+      background: #001800;
+      box-shadow: 0 0 6px #00550055;
+    }
+
+    .section-row.s-next {
+      border-color: #009900;
+      background: #000e00;
+      box-shadow: 0 0 4px #00330033;
+    }
+
+    .status-img {
+      width: 38px;
+      height: 38px;
+      object-fit: contain;
+      flex-shrink: 0;
+    }
+
+    .sec-meta {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-width: 64px;
+      flex-shrink: 0;
+    }
+
+    .section-label {
+      font-size: 1.05rem;
+      font-weight: bold;
+      color: #00FF00;
+      letter-spacing: 1px;
+    }
+
+    .section-hint {
+      font-size: 0.58rem;
+      color: #004400;
+      margin-top: 1px;
+    }
+
+
+    #bottom-bar {
+      width: 100%;
+      max-width: 520px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    #status-bar {
+      font-size: 0.7rem;
+      color: #005500;
+      letter-spacing: 1px;
+    }
+
+    #help-text {
+      font-size: 0.65rem;
+      color: #003300;
+      line-height: 1.6;
+      text-align: center;
+      margin-top: 6px;
+      padding: 0 4px;
+    }
+
+    input[type="file"] { display: none; }
+  </style>
+</head>
+<body>
+
+<div id="header">
+  <h1>SPICYLOOPER</h1>
+  <div class="hdr-btns">
+    <button onclick="document.getElementById('dir-input').click()">LOAD DIR</button>
+    <input type="file" id="dir-input" webkitdirectory multiple onchange="loadDirectory(this)">
+    <button onclick="document.getElementById('spl-input').click()">LOAD .spl</button>
+    <input type="file" id="spl-input" accept=".spl,.zip" onchange="loadSplFile(this)">
+    <button id="panic-btn" onclick="stopAll()">■ Panic!</button>
+  </div>
+</div>
+
+<div id="project-name">— no project —</div>
+<img id="cover-img" src="" alt="cover">
+
+<div id="sections"></div>
+
+<div id="bottom-bar">
+  <div id="status-bar">load a .spl file to begin</div>
+  <div id="help-text">
+    tap or press key to play &nbsp;·&nbsp; tap/key another to queue next<br>
+    tap queued section again to cancel &nbsp;·&nbsp; INTRO always leads to A<br>
+    keys: 0/space=INTRO &nbsp; 1/a &nbsp; 2/b &nbsp; 3/c &nbsp; 4/d &nbsp; 9/x=END
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script>
+'use strict';
+
+const SECTION_IDS  = ['INTRO', 'A', 'B', 'C', 'D', 'END'];
+const LOOP_SET     = new Set(['A', 'B', 'C', 'D']);
+const ONCE_SET     = new Set(['INTRO', 'END']);
+const SECTION_HINT = {
+  INTRO: '0 · space  →A once',
+  A:     '1 · a      loops',
+  B:     '2 · b      loops',
+  C:     '3 · c      loops',
+  D:     '4 · d      loops',
+  END:   '9 · x      once→stop',
+};
+
+const KEY_BINDINGS = {
+  '0': 'INTRO', ' ': 'INTRO',
+  '1': 'A',     'a': 'A',
+  '2': 'B',     'b': 'B',
+  '3': 'C',     'c': 'C',
+  '4': 'D',     'd': 'D',
+  '9': 'END',   'x': 'END',
+};
+const KEY_MAP = { INTRO: 'intro', A: 'a', B: 'b', C: 'c', D: 'd', END: 'end' };
+
+let audioCtx      = null;
+let audioBuffers  = {};    // section -> AudioBuffer
+let fileNames     = {};    // section -> display filename
+let currentSource = null;  // active AudioBufferSourceNode
+let currentSec    = null;  // currently playing section id
+let nextSec       = null;  // queued next section id
+
+// ── Audio context ──────────────────────────────────────────────────────────
+
+function getCtx() {
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  return audioCtx;
+}
+
+// ── Playback ───────────────────────────────────────────────────────────────
+
+function playSection(sec) {
+  const ctx = getCtx();
+  const buf = audioBuffers[sec];
+  if (!buf) return;
+
+  // Stop whatever is currently running without triggering its onended
+  if (currentSource) {
+    currentSource.onended = null;
+    try { currentSource.stop(); } catch (_) {}
+    currentSource = null;
+  }
+
+  const src = ctx.createBufferSource();
+  src.buffer = buf;
+  src.connect(ctx.destination);
+  src.start();
+
+  currentSource = src;
+  currentSec    = sec;
+  nextSec       = (sec === 'INTRO' && audioBuffers['A']) ? 'A' : null;
+
+  src.onended = () => {
+    if (currentSource !== src) return; // replaced by a newer source
+    currentSource = null;
+
+    if (sec === 'INTRO') {
+      if (audioBuffers['A']) {
+        playSection('A');
+      } else {
+        currentSec = null;
+        updateAllUI();
+        setStatus('stopped — no section A loaded');
+      }
+    } else if (sec === 'END') {
+      currentSec = null;
+      updateAllUI();
+      setStatus('stopped');
+    } else {
+      // Loop section: go to queued next, or re-loop self
+      const target = nextSec || sec;
+      playSection(target);
+    }
+  };
+
+  updateAllUI();
+  setStatus('playing: ' + sec);
+}
+
+function stopAll() {
+  if (currentSource) {
+    currentSource.onended = null;
+    try { currentSource.stop(); } catch (_) {}
+    currentSource = null;
+  }
+  currentSec = null;
+  nextSec    = null;
+  updateAllUI();
+  setStatus('stopped');
+}
+
+// ── User interaction ───────────────────────────────────────────────────────
+
+function handleSectionClick(sec) {
+  if (!audioBuffers[sec]) return;
+  getCtx(); // must be called from user-gesture to unlock audio on iOS
+
+  if (currentSec === null) {
+    // Nothing playing → start immediately
+    playSection(sec);
+    return;
+  }
+
+  if (ONCE_SET.has(currentSec)) {
+    // INTRO or END in progress → ignore clicks (let it finish)
+    return;
+  }
+
+  if (sec === currentSec) {
+    // Tapped the currently-playing loop section → no-op
+    return;
+  }
+
+  if (sec === nextSec) {
+    // Tapped the queued section → cancel the queue
+    nextSec = null;
+    updateAllUI();
+    setStatus('next cancelled');
+    return;
+  }
+
+  // Queue this section as next (replaces any previous queue)
+  nextSec = sec;
+  updateAllUI();
+  setStatus('next: ' + sec);
+}
+
+// ── Project loading ────────────────────────────────────────────────────────
+
+async function loadSplFile(input) {
+  const file = input.files[0];
+  if (!file) return;
+  input.value = '';
+
+  setStatus('loading…');
+  stopAll();
+
+  try {
+    const zip = await JSZip.loadAsync(file);
+
+    // Read optional project.json
+    let cfg = {};
+    const cfgFile = zip.file('project.json');
+    if (cfgFile) {
+      cfg = JSON.parse(await cfgFile.async('text'));
+    }
+
+    const projectName = cfg.name || file.name.replace(/\.(spl|zip)$/i, '');
+    document.getElementById('project-name').textContent = projectName;
+
+    // Cover image
+    const coverEntry = cfg.cover
+      ? zip.file(cfg.cover)
+      : (zip.file('cover.jpg') || zip.file('cover.jpeg') || zip.file('cover.png'));
+    const coverImg = document.getElementById('cover-img');
+    if (coverEntry) {
+      const blob = await coverEntry.async('blob');
+      if (coverImg.src) URL.revokeObjectURL(coverImg.src);
+      coverImg.src = URL.createObjectURL(blob);
+      coverImg.style.display = 'block';
+    } else {
+      coverImg.style.display = 'none';
+    }
+
+    // Decode audio for each section
+    audioBuffers = {};
+    fileNames    = {};
+    const ctx    = getCtx();
+
+    for (const [sec, key] of Object.entries(KEY_MAP)) {
+      const fname = cfg[key] || findAudio(zip, key) || findAudio(zip, sec.toLowerCase());
+      if (!fname) continue;
+      const entry = zip.file(fname);
+      if (!entry) continue;
+      try {
+        const ab = await entry.async('arraybuffer');
+        audioBuffers[sec] = await ctx.decodeAudioData(ab);
+        fileNames[sec]    = fname.split('/').pop();
+      } catch (e) {
+        console.warn('decode failed for', fname, e);
+      }
+    }
+
+    updateAllUI();
+    setStatus('loaded: ' + projectName);
+  } catch (e) {
+    setStatus('error: ' + e.message);
+    console.error(e);
+  }
+}
+
+async function loadDirectory(input) {
+  const files = Array.from(input.files);
+  input.value = '';
+  if (!files.length) return;
+
+  setStatus('loading…');
+  stopAll();
+
+  try {
+    const rel = files[0].webkitRelativePath;
+    const projectName = rel ? rel.split('/')[0] : files[0].name.replace(/\.[^.]+$/, '');
+    document.getElementById('project-name').textContent = projectName;
+
+    // Cover image
+    const coverFile = files.find(f => /^cover\.(jpg|jpeg|png)$/i.test(f.name));
+    const coverImg  = document.getElementById('cover-img');
+    if (coverFile) {
+      if (coverImg.src) URL.revokeObjectURL(coverImg.src);
+      coverImg.src = URL.createObjectURL(coverFile);
+      coverImg.style.display = 'block';
+    } else {
+      coverImg.style.display = 'none';
+    }
+
+    // Decode audio for each section
+    audioBuffers = {};
+    fileNames    = {};
+    const ctx    = getCtx();
+
+    for (const [sec, key] of Object.entries(KEY_MAP)) {
+      const f = findFileInList(files, key) || findFileInList(files, sec.toLowerCase());
+      if (!f) continue;
+      try {
+        const ab   = await f.arrayBuffer();
+        audioBuffers[sec] = await ctx.decodeAudioData(ab);
+        fileNames[sec]    = f.name;
+      } catch (e) {
+        console.warn('decode failed for', f.name, e);
+      }
+    }
+
+    updateAllUI();
+    setStatus('loaded: ' + projectName);
+  } catch (e) {
+    setStatus('error: ' + e.message);
+    console.error(e);
+  }
+}
+
+function findFileInList(files, prefix) {
+  const exts = ['.mp3', '.wav', '.ogg', '.m4a', '.aac'];
+  return files.find(f => exts.some(e => f.name.toLowerCase() === prefix + e)) || null;
+}
+
+
+function findAudio(zip, prefix) {
+  const exts = ['.mp3', '.wav', '.ogg', '.m4a', '.aac'];
+  for (const ext of exts) {
+    if (zip.file(prefix + ext)) return prefix + ext;
+  }
+  // Fallback: scan all entries for a file whose base name starts with prefix
+  let found = null;
+  zip.forEach((path, entry) => {
+    if (found || entry.dir) return;
+    const base = path.split('/').pop().toLowerCase();
+    if (base.startsWith(prefix) && exts.some(e => base.endsWith(e))) {
+      found = path;
+    }
+  });
+  return found;
+}
+
+// ── UI ─────────────────────────────────────────────────────────────────────
+
+function buildUI() {
+  const container = document.getElementById('sections');
+  container.innerHTML = '';
+  for (const sec of SECTION_IDS) {
+    const row = document.createElement('div');
+    row.id        = 'row-' + sec;
+    row.className = 'section-row disabled';
+    row.addEventListener('click', () => handleSectionClick(sec));
+
+    const img = document.createElement('img');
+    img.className = 'status-img';
+    img.src       = 'img/stop.gif';
+    img.alt       = 'stop';
+
+    const meta = document.createElement('div');
+    meta.className = 'sec-meta';
+
+    const lbl  = document.createElement('span');
+    lbl.className   = 'section-label';
+    lbl.textContent = sec;
+
+    const hint  = document.createElement('span');
+    hint.className   = 'section-hint';
+    hint.textContent = SECTION_HINT[sec];
+
+    meta.appendChild(lbl);
+    meta.appendChild(hint);
+
+    row.appendChild(img);
+    row.appendChild(meta);
+    container.appendChild(row);
+  }
+}
+
+function updateAllUI() {
+  for (const sec of SECTION_IDS) {
+    const row = document.getElementById('row-' + sec);
+    if (!row) continue;
+
+    const img  = row.querySelector('.status-img');
+    const loaded = !!audioBuffers[sec];
+
+    row.className = 'section-row' + (loaded ? '' : ' disabled');
+
+    if (sec === currentSec) {
+      row.classList.add('s-playing');
+      img.src = 'img/play.gif';
+    } else if (sec === nextSec) {
+      row.classList.add('s-next');
+      img.src = 'img/next.gif';
+    } else {
+      img.src = 'img/stop.gif';
+    }
+  }
+}
+
+function setStatus(msg) {
+  document.getElementById('status-bar').textContent = msg;
+}
+
+// ── Keyboard ───────────────────────────────────────────────────────────────
+
+document.addEventListener('keydown', (e) => {
+  if (e.repeat || e.ctrlKey || e.altKey || e.metaKey) return;
+  const sec = KEY_BINDINGS[e.key];
+  if (sec) {
+    e.preventDefault();
+    handleSectionClick(sec);
+  }
+});
+
+// ── Init ───────────────────────────────────────────────────────────────────
+
+buildUI();
+</script>
+
+</body>
+</html>

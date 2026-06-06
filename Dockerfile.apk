@@ -1,0 +1,23 @@
+FROM spicylooper-builder
+
+WORKDIR /build
+
+# ── Web assets ────────────────────────────────────────────────────────────────
+RUN rm -rf www
+COPY index.html www/
+COPY img/stop.gif img/play.gif img/next.gif www/img/
+RUN wget -q https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js -O www/jszip.min.js
+
+# Sync web assets into the existing Android project
+RUN npx cap copy android
+
+# ── Icon ──────────────────────────────────────────────────────────────────────
+COPY img/icon.png resources/icon.png
+RUN npx capacitor-assets generate --android
+
+# ── Build ─────────────────────────────────────────────────────────────────────
+RUN cd android && ./gradlew assembleDebug --no-daemon -q
+
+# ── Output ────────────────────────────────────────────────────────────────────
+CMD cp android/app/build/outputs/apk/debug/app-debug.apk /output/SpicyLooper-debug.apk && \
+    echo "APK ready: /output/SpicyLooper-debug.apk"
