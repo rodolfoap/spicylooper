@@ -2,8 +2,7 @@ FROM node:20-bookworm-slim
 
 # ── System deps ───────────────────────────────────────────────────────────────
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-      openjdk-17-jdk-headless wget unzip && \
+    apt-get install -y --no-install-recommends openjdk-17-jdk-headless wget unzip && \
     rm -rf /var/lib/apt/lists/*
 
 # ── Android SDK ───────────────────────────────────────────────────────────────
@@ -14,8 +13,7 @@ ENV PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-too
 # If this URL breaks, get the latest from:
 # https://developer.android.com/studio#command-line-tools-only
 RUN mkdir -p $ANDROID_HOME/cmdline-tools && \
-    wget -q https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip \
-         -O /tmp/cmdtools.zip && \
+    wget -q https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -O /tmp/cmdtools.zip && \
     unzip -q /tmp/cmdtools.zip -d $ANDROID_HOME/cmdline-tools && \
     mv $ANDROID_HOME/cmdline-tools/cmdline-tools $ANDROID_HOME/cmdline-tools/latest && \
     rm /tmp/cmdtools.zip
