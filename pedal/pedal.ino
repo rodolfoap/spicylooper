@@ -11,7 +11,7 @@ const int NUM_KEYS = 7;
 const int buttonPins[NUM_KEYS] = {13, 12, 14, 27, 26, 25, 33};
 
 // Map each pin to its corresponding key
-const uint8_t keyMap[NUM_KEYS] = {' ', ']', '=', '-', '[', '.', ','};
+const uint8_t keyMap[NUM_KEYS] = {KEY_SPACE, KEY_RIGHTBRACE, KEY_EQUAL, KEY_MINUS, KEY_LEFTBRACE, KEY_DOT, KEY_COMMA};
 
 // Track the previous state of each button to detect initial press
 int lastButtonStates[NUM_KEYS];

@@ -82,14 +82,50 @@ When INTRO starts, A is automatically pre-queued as next. The current loop alway
 
 ### Keyboard shortcuts (desktop / tablet with keyboard)
 
-| Key | Section |
-|-----|---------|
+| Key | Action |
+|-----|--------|
 | `0` or `Space` | INTRO |
-| `1` or `a` | A |
-| `2` or `b` | B |
-| `3` or `c` | C |
-| `4` or `d` | D |
-| `9` or `x` | END |
+| `1` or `]` | A |
+| `2` or `=` | B |
+| `3` or `-` | C |
+| `4` or `[` | D |
+| `9` or `.` | END |
+| `,` | Stop (Panic) |
+
+---
+
+## Bluetooth foot pedal (ESP32)
+
+SpicyLooper includes firmware for an ESP32-based Bluetooth HID pedal (`pedal/pedal.ino`). The pedal pairs as a wireless keyboard and sends the key codes SpicyLooper listens to, so your hands stay on the instrument.
+
+### Hardware
+
+- **Board**: ESP32 Dev Module
+- **Library**: HijelHID_BLEKeyboard 0.5.0 (Arduino)
+- **Card**: esp32 3.3.10 by Espressif Systems
+
+### Wiring
+
+Connect each pedal switch between the pin and GND. The firmware uses internal pull-up resistors — no external resistors needed.
+
+| GPIO pin | Key sent | Action |
+|----------|----------|--------|
+| 13 | `Space` | INTRO |
+| 12 | `]` | A |
+| 14 | `=` | B |
+| 27 | `-` | C |
+| 26 | `[` | D |
+| 25 | `.` | END |
+| 33 | `,` | Stop (Panic) |
+
+![ESP32 pinout](img/pinout.png)
+
+### Flashing
+
+1. Open `pedal/pedal.ino` in the Arduino IDE.
+2. Select board **ESP32 Dev Module**.
+3. Install library **HijelHID_BLEKeyboard 0.5.0**.
+4. Flash via USB, then pair the device over Bluetooth — it appears as a keyboard.
 
 ---
 
