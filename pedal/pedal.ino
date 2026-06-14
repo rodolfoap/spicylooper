@@ -1,8 +1,9 @@
 #include <HijelHID_BLEKeyboard.h>
 
-// Cards installed: ESP32
-// Libs installed: HijelHID_BLEKeyboard
+// Cards installed: esp32 3.3.10 by Espressif Systems
+// Libs installed: HijelHID_BLEKeyboard 0.5.0
 // Connect pins 13, 12, 14, 27, 26, 25 to GND to get 0, 1, 2, 3, 4, 9
+// Card in USB port: ESP32 Dev Module
 HijelHID_BLEKeyboard keyboard;
 
 // Define the GPIO pins you want to use
