@@ -10,7 +10,7 @@ A dark-themed audio loop player for Android, designed for musicians who want to 
 
 SpicyLooper is distributed as an Android APK (side-load — not on the Play Store).
 
-1. Copy `SpicyLooper-debug.apk` to your Android device.
+1. Copy `SpicyLooper.apk` to your Android device.
 2. On your device go to **Settings → Apps → Special app access → Install unknown apps** and allow your file manager or browser.
 3. Open the APK file and tap **Install**.
 
