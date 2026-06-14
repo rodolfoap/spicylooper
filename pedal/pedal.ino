@@ -2,16 +2,16 @@
 
 // Cards installed: esp32 3.3.10 by Espressif Systems
 // Libs installed: HijelHID_BLEKeyboard 0.5.0
-// Connect pins 13, 12, 14, 27, 26, 25 to GND to get 0, 1, 2, 3, 4, 9
+// Pin → key: 13=SPACE(INTRO) 12=](A) 14=='(B) 27=-(C) 26=[(D) 25=.(END) 33=,(STOP)
 // Card in USB port: ESP32 Dev Module
 HijelHID_BLEKeyboard keyboard;
 
 // Define the GPIO pins you want to use
-const int NUM_KEYS = 6;
-const int buttonPins[NUM_KEYS] = {13, 12, 14, 27, 26, 25};
+const int NUM_KEYS = 7;
+const int buttonPins[NUM_KEYS] = {13, 12, 14, 27, 26, 25, 33};
 
 // Map each pin to its corresponding key
-const uint8_t keyMap[NUM_KEYS] = {KEY_0, KEY_1, KEY_2, KEY_3, KEY_4, KEY_9};
+const uint8_t keyMap[NUM_KEYS] = {' ', ']', '=', '-', '[', '.', ','};
 
 // Track the previous state of each button to detect initial press
 int lastButtonStates[NUM_KEYS];

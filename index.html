@@ -206,7 +206,7 @@
   <div id="help-text">
     tap or press key to play &nbsp;·&nbsp; tap/key another to queue next<br>
     tap queued section again to cancel &nbsp;·&nbsp; INTRO always leads to A<br>
-    keys: 0/space=INTRO &nbsp; 1/a &nbsp; 2/b &nbsp; 3/c &nbsp; 4/d &nbsp; 9/x=END
+    keys: 0/space=INTRO &nbsp; 1/]=A &nbsp; 2/==B &nbsp; 3/-=C &nbsp; 4/[=D &nbsp; 9/.=END &nbsp; ,=STOP
   </div>
 </div>
 
@@ -218,21 +218,21 @@ const SECTION_IDS  = ['INTRO', 'A', 'B', 'C', 'D', 'END'];
 const LOOP_SET     = new Set(['A', 'B', 'C', 'D']);
 const ONCE_SET     = new Set(['INTRO', 'END']);
 const SECTION_HINT = {
-  INTRO: '0 · space  →A once',
-  A:     '1 · a      loops',
-  B:     '2 · b      loops',
-  C:     '3 · c      loops',
-  D:     '4 · d      loops',
-  END:   '9 · x      once→stop',
+  INTRO: '0 · space · pedal  →A once',
+  A:     '1 · ]              loops',
+  B:     '2 · =              loops',
+  C:     '3 · -              loops',
+  D:     '4 · [              loops',
+  END:   '9 · .              once→stop',
 };
 
 const KEY_BINDINGS = {
   '0': 'INTRO', ' ': 'INTRO',
-  '1': 'A',     'a': 'A',
-  '2': 'B',     'b': 'B',
-  '3': 'C',     'c': 'C',
-  '4': 'D',     'd': 'D',
-  '9': 'END',   'x': 'END',
+  '1': 'A',     ']': 'A',
+  '2': 'B',     '=': 'B',
+  '3': 'C',     '-': 'C',
+  '4': 'D',     '[': 'D',
+  '9': 'END',   '.': 'END',
 };
 const KEY_MAP = { INTRO: 'intro', A: 'a', B: 'b', C: 'c', D: 'd', END: 'end' };
 
@@ -553,6 +553,7 @@ function setStatus(msg) {
 
 document.addEventListener('keydown', (e) => {
   if (e.repeat || e.ctrlKey || e.altKey || e.metaKey) return;
+  if (e.key === ',') { e.preventDefault(); stopAll(); return; }
   const sec = KEY_BINDINGS[e.key];
   if (sec) {
     e.preventDefault();
