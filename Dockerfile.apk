@@ -6,7 +6,8 @@ WORKDIR /build
 RUN rm -rf www
 COPY index.html www/
 COPY img/stop.gif img/play.gif img/next.gif www/img/
-RUN wget -q https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js -O www/jszip.min.js
+RUN wget -q https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js -O www/jszip.min.js && \
+    sed -i 's|https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js|jszip.min.js|g' www/index.html
 
 # Sync web assets into the existing Android project
 RUN npx cap copy android
